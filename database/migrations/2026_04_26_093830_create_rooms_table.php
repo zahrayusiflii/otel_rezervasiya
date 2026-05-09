@@ -1,31 +1,11 @@
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
+public function up()
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-       Schema::create('rooms', function (Blueprint $table) {
-            $table->id();
-            $table->string('room_number'); // Otaq nömrəsi
-            $table->string('room_type');   // Otaq növü (Lüks, Standart)
-            $table->decimal('price', 8, 2); // Qiymət
-            $table->boolean('is_available')->default(true); // Boşdur ya yox
-            $table->timestamps();
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('rooms');
-    }
-};
+    Schema::create('rooms', function (Blueprint $table) {
+        $table->id(); // Avtomatik artan ID (1, 2, 3...)
+        $table->string('room_no')->unique(); // Otaq nömrəsi təkrar ola bilməz
+        $table->string('type'); // Növü (məs: Standart)
+        $table->decimal('price', 10, 2); // Qiymət (məs: 55.50)
+        $table->boolean('status')->default(0); // 0 = Boş, 1 = Dolu
+        $table->timestamps(); // Yaranma və yenilənmə vaxtı
+    });
+}

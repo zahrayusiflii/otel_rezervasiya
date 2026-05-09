@@ -1,33 +1,35 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Room;
+use App\Models\Room; // Modelimizi daxil edirik
 
 class RoomController extends Controller
 {
-    // Otaqları siyahılamaq üçün
+    // Səhifəni və otaqları göstərmək üçün
     public function index()
     {
-        $rooms = Room::all();
-        return view('rooms.index', compact('rooms'));
+        $rooms = Room::all(); // Bütün otaqları bazadan çək
+        return view('welcome', compact('rooms'));
     }
 
-    // Yeni otağı bazaya qeyd etmək üçün
+    // Yeni otaq əlavə etmək üçün
     public function store(Request $request)
     {
-        Room::create([
-            'room_number' => $request->room_number,
-            'room_type'   => $request->room_type,
-            'price'       => $request->price,
+        // Formadan gələn məlumatların yoxlanılması
+        $request->validate([
+            'room_no' => 'required|unique:rooms',
+            'type'    => 'required',
+            'price'   => 'required|numeric'
         ]);
 
-        return redirect()->back();
+        // Bazaya yazma əməliyyatı
+        Room::create([
+            'room_no' => $request->room_no,
+            'type'    => $request->type,
+            'price'   => $request->price
+        ]);
+
+        return redirect()->back()->with('success', 'Otaq əlavə edildi!');
     }
-    public function destroy($id)
-{
-    \App\Models\Room::destroy($id);
-    return redirect()->back();
-}
 }
