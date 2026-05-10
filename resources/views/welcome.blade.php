@@ -230,35 +230,6 @@ body.sidebar-closed .sidebar-toggle {
         grid-template-columns: 1fr;
     }
 }
-.dark-mode {
-    background-color: #121212;
-    color: white;
-}
-
-.dark-mode .forma-qutusu {
-    background-color: #1e1e1e;
-    border-color: #444;
-}
-
-.dark-mode table {
-    background-color: #1e1e1e;
-}
-
-.dark-mode th {
-    background-color: #2a2a2a;
-    color: white;
-}
-
-.dark-mode td {
-    border-color: #444;
-}
-
-.dark-mode input {
-    background-color: white;
-    color: #222;
-    border: 1px solid #ddd;
-}
-
 
 </style>
 </head>
@@ -549,34 +520,5 @@ body.sidebar-closed .sidebar-toggle {
         roomPrice.value = selectedOption.getAttribute('data-price') || '';
     }
 </script>
-<script>
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-    }
-
-    function toggleDarkMode() {
-        document.body.classList.toggle('dark-mode');
-
-        if (document.body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-        } else {
-            localStorage.setItem('theme', 'light');
-        }
-    }
-</script>
-<script>
-    const checkbox = document.getElementById('darkModeCheckbox');
-
-    checkbox.addEventListener('change', function () {
-        if (checkbox.checked) {
-            document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
-        }
-    });
-</script>
-
 </body>
 </html>
