@@ -230,6 +230,81 @@ body.sidebar-closed .sidebar-toggle {
         grid-template-columns: 1fr;
     }
 }
+.main-content {
+    margin-left: 280px;
+    padding: 40px;
+}
+
+.reports-section {
+    display: block;
+}
+
+
+.reports-section h2 {
+    font-size: 32px;
+    margin-bottom: 25px;
+    color: #111827;
+}
+
+.report-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.report-card {
+    background: white;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.report-card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #374151;
+}
+
+.report-card strong {
+    display: block;
+    font-size: 34px;
+    margin-bottom: 10px;
+    color: #4f46e5;
+}
+
+.report-card p {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+.dark-mode .reports-section h2 {
+    color: white;
+}
+
+.dark-mode .report-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+.dark-mode .report-card h3 {
+    color: #e5e7eb;
+}
+
+.dark-mode .report-card p {
+    color: #cbd5e1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
 </style>
 </head>
@@ -248,18 +323,14 @@ body.sidebar-closed .sidebar-toggle {
     <a href="#" class="sidebar-link active">▦ <span>Dashboard</span></a>
     <a href="#rooms" class="sidebar-link">▣ <span>Otaqlar</span></a>
     <a href="#reservations" class="sidebar-link">▤ <span>Rezervasiyalar</span></a>
-    <a href="#" class="sidebar-link">⌁ <span>Hesabatlar</span></a>
-    <a href="#" class="sidebar-link">♙ <span>Müştərilər</span></a>
+    <a href="#reportsSection" class="sidebar-link">⌁<span>Hesabatlar</span></a>
+    <a href="#customersSection" class="sidebar-link">♙ <span>Müştərilər</span></a>
     <a href="#" class="sidebar-link">⚙ <span>Parametrlər</span></a>
     <a href="#" class="sidebar-link">⇱ <span>Çıxış</span></a>
 
-    <div class="dark-box">
-    <span>☾ Dark mode</span>
-    <input type="checkbox" id="darkModeCheckbox">
-</div>
+    
 
 </aside>
-
 <div class="container mt-5">
     <div class="user-box">
         <img id="userImage" src="{{ asset('images/fidan.png') }}" alt="User">
@@ -397,6 +468,7 @@ body.sidebar-closed .sidebar-toggle {
             </tr>
             @endforelse
         </tbody>
+
     </table>
 </div>
 
@@ -492,6 +564,199 @@ body.sidebar-closed .sidebar-toggle {
         </tbody>
     </table>
 </div>
+<section id="reportsSection" class="reports-section mt-5">
+        <h2 class="mb-4">Hesabatlar</h2>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 p-4">
+                    <h5>Ümumi Otaqlar</h5>
+                    <h2>{{ $rooms->count() }}</h2>
+                    <p class="text-muted mb-0">Bütün otaqlar</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 p-4">
+                    <h5>Boş Otaqlar</h5>
+                    <h2>{{ $rooms->where('status', 'bos')->count() }}</h2>
+                    <p class="text-muted mb-0">Hazırda boş otaqlar</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 p-4">
+                    <h5>Dolu Otaqlar</h5>
+                    <h2>{{ $rooms->where('status', 'dolu')->count() }}</h2>
+                    <p class="text-muted mb-0">Tutulmuş otaqlar</p>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm border-0 p-4">
+                    <h5>Rezervlər</h5>
+                    <h2>{{ $rooms->where('status', 'rezerv')->count() }}</h2>
+                    <p class="text-muted mb-0">Rezerv olunmuş otaqlar</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+    <div class="card shadow-sm border-0 p-4">
+        <h5>Gündəlik Gəlir</h5>
+        <h2>{{ $rooms->where('status', 'dolu')->sum('price') }} AZN</h2>
+        <p class="text-muted mb-0">Bu gün üçün gəlir</p>
+    </div>
+</div>
+
+        </div>
+    </section>
+    </div>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">Müştərilər</h2>
+        <p class="text-muted mb-0">Oteldə qalan və rezerv edən müştərilər</p>
+    </div>
+
+    <button class="btn btn-success" onclick="showCustomerForm()">+ Yeni Müştəri</button>
+</div>
+<div id="customerForm" class="card shadow-sm border-0 p-4 mb-4" style="display: none;">
+    <h5 class="mb-3">Yeni Müştəri Əlavə Et</h5>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <input type="text" id="customerName" class="form-control" placeholder="Ad Soyad">
+        </div>
+
+        <div class="col-md-4">
+            <input type="text" id="customerPhone" class="form-control" placeholder="Telefon">
+        </div>
+
+        <div class="col-md-4">
+            <input type="email" id="customerEmail" class="form-control" placeholder="Email">
+        </div>
+
+        <div class="col-md-3">
+            <input type="text" id="customerRoom" class="form-control" placeholder="Otaq">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" id="customerCheckIn" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" id="customerCheckOut" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <select id="customerStatus" class="form-select">
+                <option value="Aktiv">Aktiv</option>
+                <option value="Rezerv">Rezerv</option>
+                <option value="Çıxıb">Çıxıb</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <input type="number" id="customerPayment" class="form-control" placeholder="Ödəniş">
+        </div>
+
+        <div class="col-md-12">
+            <button class="btn btn-primary" onclick="addCustomer()">Əlavə et</button>
+        </div>
+    </div>
+</div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="text-muted">Ümumi Müştəri</h6>
+                <h2>36</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="text-muted">Aktiv Qalanlar</h6>
+                <h2>14</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="text-muted">Bugünkü Giriş</h6>
+                <h2>5</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 p-4">
+                <h6 class="text-muted">VIP Müştəri</h6>
+                <h2>3</h2>
+            </div>
+        </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <table class="table table-hover align-middle mb-0">
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Müştəri</th>
+                        <th>Telefon</th>
+                        <th>Otaq</th>
+                        <th>Giriş</th>
+                        <th>Çıxış</th>
+                        <th>Status</th>
+                        <th>Ödəniş</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+
+                    <tr>
+                        <td>
+                            <strong>Dadaşzadə Sabir</strong><br>
+                            <small class="text-muted">sabir@mail.com</small>
+                        </td>
+                        <td>+994 50 123 45 67</td>
+                        <td>204</td>
+                        <td>10.05.2026</td>
+                        <td>13.05.2026</td>
+                        <td><span class="badge bg-success">Aktiv</span></td>
+                        <td>120 AZN</td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>Rəfiyev Mehdi</strong><br>
+                            <small class="text-muted">mehdi@mail.com</small>
+                        </td>
+                        <td>+994 55 222 33 44</td>
+                        <td>108</td>
+                        <td>09.05.2026</td>
+                        <td>11.05.2026</td>
+                        <td><span class="badge bg-warning text-dark">Rezerv</span></td>
+                        <td>50AZN</td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>Nigar Həsənli</strong><br>
+                            <small class="text-muted">nigar@mail.com</small>
+                        </td>
+                        <td>+994 70 777 88 99</td>
+                        <td>301</td>
+                        <td>07.05.2026</td>
+                        <td>10.05.2026</td>
+                        <td><span class="badge bg-secondary">Çıxıb</span></td>
+                        <td>100AZN</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
 
 <script>
     function changeUser() {
@@ -520,5 +785,75 @@ body.sidebar-closed .sidebar-toggle {
         roomPrice.value = selectedOption.getAttribute('data-price') || '';
     }
 </script>
+<script>
+    function showReports() {
+        document.getElementById('reportsSection').style.display = 'block';
+    }
+</script>
+<script>
+    function goToReports(event) {
+        event.preventDefault();
+
+        document.getElementById('reportsSection').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+</script>
+<script>
+    function showCustomerForm() {
+        const form = document.getElementById('customerForm');
+
+        if (form.style.display === 'none') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    }
+
+    function addCustomer() {
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        const email = document.getElementById('customerEmail').value;
+        const room = document.getElementById('customerRoom').value;
+        const checkIn = document.getElementById('customerCheckIn').value;
+        const checkOut = document.getElementById('customerCheckOut').value;
+        const status = document.getElementById('customerStatus').value;
+        const payment = document.getElementById('customerPayment').value;
+
+        if (!name || !phone || !room || !checkIn || !checkOut || !payment) {
+            alert('Zəhmət olmasa bütün əsas xanaları doldurun.');
+            return;
+        }
+
+        let badgeClass = 'bg-success';
+
+        if (status === 'Rezerv') {
+            badgeClass = 'bg-warning text-dark';
+        } else if (status === 'Çıxıb') {
+            badgeClass = 'bg-secondary';
+        }
+
+        const tableBody = document.getElementById('customerTableBody');
+
+        tableBody.innerHTML += `
+            <tr>
+                <td>
+                    <strong>${name}</strong><br>
+                    <small class="text-muted">${email}</small>
+                </td>
+                <td>${phone}</td>
+                <td>${room}</td>
+                <td>${checkIn}</td>
+                <td>${checkOut}</td>
+                <td><span class="badge ${badgeClass}">${status}</span></td>
+                <td>${payment} AZN</td>
+            </tr>
+        `;
+
+        document.getElementById('customerForm').style.display = 'none';
+    }
+</script>
+
 </body>
 </html>
