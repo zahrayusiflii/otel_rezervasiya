@@ -657,6 +657,50 @@ body.sidebar-closed .sidebar-toggle {
         <div class="col-md-4">
             <input type="number" id="customerPayment" class="form-control" placeholder="Ödəniş">
         </div>
+        <div class="col-md-4">
+    <div class="col-md-12">
+    <label class="form-label">Otaq növü</label>
+
+    <div class="d-flex gap-4 flex-wrap">
+        <div class="form-check">
+            <input class="form-check-input room-type-check" type="checkbox"
+                   id="standardRoom" value="Standard Room" data-price="50"
+                   onclick="selectCustomerRoom(this)">
+            <label class="form-check-label" for="standardRoom">
+                Standard Room
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input room-type-check" type="checkbox"
+                   id="vipRoom" value="VIP Room" data-price="120"
+                   onclick="selectCustomerRoom(this)">
+            <label class="form-check-label" for="vipRoom">
+                VIP Room
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input room-type-check" type="checkbox"
+                   id="deluxeRoom" value="Deluxe Room" data-price="90"
+                   onclick="selectCustomerRoom(this)">
+            <label class="form-check-label" for="deluxeRoom">
+                Deluxe Room
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input room-type-check" type="checkbox"
+                   id="familyRoom" value="Family Room" data-price="100"
+                   onclick="selectCustomerRoom(this)">
+            <label class="form-check-label" for="familyRoom">
+                Family Room
+            </label>
+        </div>
+    </div>
+</div>
+
+</div>
 
         <div class="col-md-12">
             <button class="btn btn-primary" onclick="addCustomer()">Əlavə et</button>
@@ -668,28 +712,28 @@ body.sidebar-closed .sidebar-toggle {
         <div class="col-md-3">
             <div class="card shadow-sm border-0 p-4">
                 <h6 class="text-muted">Ümumi Müştəri</h6>
-                <h2>36</h2>
+                <h2 id="totalCustomers">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="card shadow-sm border-0 p-4">
                 <h6 class="text-muted">Aktiv Qalanlar</h6>
-                <h2>14</h2>
+                <h2 id="activeCustomers">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="card shadow-sm border-0 p-4">
                 <h6 class="text-muted">Bugünkü Giriş</h6>
-                <h2>5</h2>
+                <h2 id="todayCustomers">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="card shadow-sm border-0 p-4">
                 <h6 class="text-muted">VIP Müştəri</h6>
-                <h2>3</h2>
+                <h2 id="vipCustomers">0</h2>
             </div>
         </div>
 </div>
@@ -729,8 +773,8 @@ body.sidebar-closed .sidebar-toggle {
 
                     <tr>
                         <td>
-                            <strong>Rəfiyev Mehdi</strong><br>
-                            <small class="text-muted">mehdi@mail.com</small>
+                            <strong>Hacıyeva Xədicə</strong><br>
+                            <small class="text-muted">xadi@mail.com</small>
                         </td>
                         <td>+994 55 222 33 44</td>
                         <td>108</td>
@@ -801,6 +845,8 @@ body.sidebar-closed .sidebar-toggle {
     }
 </script>
 <script>
+    let customers = JSON.parse(localStorage.getItem('customers')) || [];
+
     function showCustomerForm() {
         const form = document.getElementById('customerForm');
 
@@ -811,6 +857,107 @@ body.sidebar-closed .sidebar-toggle {
         }
     }
 
+    function formatDate(dateValue) {
+        const date = new Date(dateValue);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${day}.${month}.${year}`;
+    }
+
+    function getBadgeClass(status) {
+        if (status === 'Rezerv') {
+            return 'bg-warning text-dark';
+        }
+
+        if (status === 'Çıxıb') {
+            return 'bg-secondary';
+        }
+
+        return 'bg-success';
+    }
+
+    function renderCustomers() {
+        const tableBody = document.getElementById('customerTableBody');
+
+        tableBody.innerHTML = '';
+
+        customers.forEach(customer => {
+            tableBody.innerHTML += `
+                <tr data-vip="${customer.isVip}">
+                    <td>
+                        <strong>${customer.name}</strong><br>
+                        <small class="text-muted">${customer.email}</small>
+                    </td>
+                    <td>${customer.phone}</td>
+                    <td>${customer.room}</td>
+                    <td>${customer.checkIn}</td>
+                    <td>${customer.checkOut}</td>
+                    <td><span class="badge ${getBadgeClass(customer.status)}">${customer.status}</span></td>
+                    <td>${customer.payment} AZN</td>
+                </tr>
+            `;
+        });
+
+        updateCustomerStats();
+    }
+
+    function updateCustomerStats() {
+        const rows = document.querySelectorAll('#customerTableBody tr');
+
+        let total = rows.length;
+        let active = 0;
+        let today = 0;
+        let vip = 0;
+
+        const now = new Date();
+        const todayText = String(now.getDate()).padStart(2, '0') + '.' +
+            String(now.getMonth() + 1).padStart(2, '0') + '.' +
+            now.getFullYear();
+
+        rows.forEach(row => {
+            const status = row.querySelector('.badge')?.innerText.trim();
+            const checkIn = row.children[3]?.innerText.trim();
+
+            if (status === 'Aktiv') {
+                active++;
+            }
+
+            if (checkIn === todayText) {
+                today++;
+            }
+
+            if (row.dataset.vip === 'true') {
+                vip++;
+            }
+        });
+
+        document.getElementById('totalCustomers').innerText = total;
+        document.getElementById('activeCustomers').innerText = active;
+        document.getElementById('todayCustomers').innerText = today;
+        document.getElementById('vipCustomers').innerText = vip;
+    }
+    function selectCustomerRoom(selectedCheckbox) {
+    const roomChecks = document.querySelectorAll('.room-type-check');
+
+    roomChecks.forEach(check => {
+        if (check !== selectedCheckbox) {
+            check.checked = false;
+        }
+    });
+
+    if (selectedCheckbox.checked) {
+        document.getElementById('customerRoom').value = selectedCheckbox.value;
+        document.getElementById('customerPayment').value = selectedCheckbox.dataset.price;
+
+    
+    } else {
+        document.getElementById('customerRoom').value = '';
+        document.getElementById('customerPayment').value = '';
+    }
+}
+
     function addCustomer() {
         const name = document.getElementById('customerName').value;
         const phone = document.getElementById('customerPhone').value;
@@ -820,40 +967,48 @@ body.sidebar-closed .sidebar-toggle {
         const checkOut = document.getElementById('customerCheckOut').value;
         const status = document.getElementById('customerStatus').value;
         const payment = document.getElementById('customerPayment').value;
+        const isVip = document.getElementById('vipRoom').checked;
+
 
         if (!name || !phone || !room || !checkIn || !checkOut || !payment) {
             alert('Zəhmət olmasa bütün əsas xanaları doldurun.');
             return;
         }
 
-        let badgeClass = 'bg-success';
+        const newCustomer = {
+            name: name,
+            phone: phone,
+            email: email,
+            room: room,
+            checkIn: formatDate(checkIn),
+            checkOut: formatDate(checkOut),
+            status: status,
+            payment: payment,
+            isVip: isVip
+        };
 
-        if (status === 'Rezerv') {
-            badgeClass = 'bg-warning text-dark';
-        } else if (status === 'Çıxıb') {
-            badgeClass = 'bg-secondary';
-        }
+        customers.push(newCustomer);
+        localStorage.setItem('customers', JSON.stringify(customers));
 
-        const tableBody = document.getElementById('customerTableBody');
-
-        tableBody.innerHTML += `
-            <tr>
-                <td>
-                    <strong>${name}</strong><br>
-                    <small class="text-muted">${email}</small>
-                </td>
-                <td>${phone}</td>
-                <td>${room}</td>
-                <td>${checkIn}</td>
-                <td>${checkOut}</td>
-                <td><span class="badge ${badgeClass}">${status}</span></td>
-                <td>${payment} AZN</td>
-            </tr>
-        `;
+        renderCustomers();
 
         document.getElementById('customerForm').style.display = 'none';
+
+        document.getElementById('customerName').value = '';
+        document.getElementById('customerPhone').value = '';
+        document.getElementById('customerEmail').value = '';
+        document.getElementById('customerRoom').value = '';
+        document.getElementById('customerCheckIn').value = '';
+        document.getElementById('customerCheckOut').value = '';
+        document.getElementById('customerPayment').value = '';
+        document.getElementById('customerVip').checked = false;
+        document.querySelectorAll('.room-type-check').forEach(check => check.checked = false);
+
     }
+
+    renderCustomers();
 </script>
+
 
 </body>
 </html>
