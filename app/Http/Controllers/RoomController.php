@@ -37,6 +37,10 @@ class RoomController extends Controller
 
         return redirect()->back();
     }
+    public function show(Room $room)
+{
+    return view('rooms.show', compact('room'));
+}
 
     public function destroy(Room $room)
     {
@@ -44,5 +48,40 @@ class RoomController extends Controller
 
         return redirect()->route('rooms.index');
     }
+    public function detail($type)
+{
+    $rooms = [
+        'standart' => [
+            'name' => 'Standart Room',
+            'price' => 50,
+            'image' => 'standard-room.jpg',
+        ],
+        'vip' => [
+            'name' => 'VIP Room',
+            'price' => 120,
+            'image' => 'vip-room.jpg',
+        ],
+        'family' => [
+            'name' => 'Family Room',
+            'price' => 90,
+            'image' => 'family-room.jpg',
+        ],
+        'deluxe' => [
+            'name' => 'Deluxe Room',
+            'price' => 100,
+            'image' => 'deluxe-room.jpg',
+        ],
+    ];
+
+    if (!isset($rooms[$type])) {
+        abort(404);
+    }
+
+    $room = $rooms[$type];
+
+    return view('rooms.show', compact('room'));
 }
+
+}
+
 

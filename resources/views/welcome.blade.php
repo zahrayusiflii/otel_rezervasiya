@@ -196,6 +196,16 @@ body.sidebar-closed .sidebar-toggle {
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
+.room-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.room-link:hover {
+    transform: translateY(-4px);
+    transition: 0.2s;
+}
 
 .room-card img {
     width: 100%;
@@ -475,7 +485,7 @@ body.sidebar-closed .sidebar-toggle {
     </div>
 </form>
 <div class="room-grid">
-    <div class="room-card">
+    <a href="{{ route('rooms.detail', 'standart') }}" class="room-card room-link">
         <img src="{{ asset('images/standard-room.jpg') }}" alt="Standart room">
         <div class="room-info">
             <h4>Standart Room</h4>
@@ -486,9 +496,9 @@ body.sidebar-closed .sidebar-toggle {
             </p>
             <span>Qiymət: 50 AZN / gecə</span>
         </div>
-    </div>
+    </a>
 
-    <div class="room-card">
+    <a href="{{ route('rooms.detail', 'vip') }}" class="room-card room-link">
         <img src="{{ asset('images/vip-room.jpg') }}" alt="VIP room">
         <div class="room-info">
             <h4>VIP Room</h4>
@@ -498,9 +508,9 @@ body.sidebar-closed .sidebar-toggle {
             </p>
             <span>Qiymət: 120 AZN / gecə</span>
         </div>
-    </div>
+</a>
 
-    <div class="room-card">
+    <a href="{{ route('rooms.detail', 'family') }}" class="room-card room-link">
         <img src="{{ asset('images/family-room.jpg') }}" alt="Family room">
         <div class="room-info">
             <h4>Family Room</h4>
@@ -510,9 +520,9 @@ body.sidebar-closed .sidebar-toggle {
             </p>
             <span>Qiymət: 90 AZN / gecə</span>
         </div>
-    </div>
+</a>
 
-    <div class="room-card">
+    <a href="{{ route('rooms.detail', 'deluxe') }}" class="room-card room-link">
         <img src="{{ asset('images/deluxe-room.jpg') }}" alt="Deluxe room">
         <div class="room-info">
             <h4>Deluxe Room</h4>
@@ -522,7 +532,7 @@ body.sidebar-closed .sidebar-toggle {
             </p>
             <span>Qiymət: 100 AZN / gecə</span>
         </div>
-    </div>
+</a>
 </div>
 
         </div>
